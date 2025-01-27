@@ -66,14 +66,25 @@ const Layout = ({ children }) => {
           <Flex align="center" justify="space-between">
             {/* Logo */}
             <RouterLink to="/">
-              <Image
-                src="/assets/Logo (2).PNG"
-                alt="Ematik Logo"
-                height={{ base: "40px", md: "60px" }}
-                width="auto"
-                maxW={{ base: "150px", md: "250px" }}
-                objectFit="contain"
-              />
+              <HStack spacing={2}>
+                <Image
+                  src="/assets/lo.png"
+                  alt="Ematik Logo"
+                  height={{ base: "30px", md: "35px" }}
+                  width="auto"
+                  maxW={{ base: "30px", md: "35px" }}
+                  objectFit="contain"
+                />
+                <Text
+                  fontSize={{ base: "xl", md: "2xl" }}
+                  fontFamily="aglowCandy"
+                  bgGradient="linear(to-r, blue.400, teal.400)"
+                  bgClip="text"
+                  display={{ base: "none", md: "block" }}
+                >
+                  eMatik
+                </Text>
+              </HStack>
             </RouterLink>
 
             {/* Desktop Navigation */}
@@ -177,8 +188,10 @@ const Layout = ({ children }) => {
                 <Button
                   as={RouterLink}
                   to="/auth"
-                  colorScheme="purple"
+                  bgGradient="linear(to-r, blue.400, teal.400)"
+                  color="white"
                   size="sm"
+                  _hover={{ bgGradient: "linear(to-r, teal.400, blue.400)" }}
                 >
                   Se connecter
                 </Button>
@@ -193,7 +206,28 @@ const Layout = ({ children }) => {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">Menu</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">
+            <RouterLink to="/" onClick={onClose}>
+              <HStack spacing={2}>
+                <Image
+                  src="/assets/lo.png"
+                  alt="Ematik Logo"
+                  height="30px"
+                  width="auto"
+                  maxW="30px"
+                  objectFit="contain"
+                />
+                <Text
+                  fontSize="xl"
+                  fontFamily="aglowCandy"
+                  bgGradient="linear(to-r, blue.400, teal.400)"
+                  bgClip="text"
+                >
+                  eMatik
+                </Text>
+              </HStack>
+            </RouterLink>
+          </DrawerHeader>
           <DrawerBody>
             <VStack align="stretch" spacing={4}>
               <Link

@@ -36,6 +36,7 @@ import {
 } from '@chakra-ui/react';
 import { FiEye, FiSearch, FiFilter } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
+import { useColorModeValue } from '@chakra-ui/react';
 
 const TransactionModal = ({ isOpen, onClose, transaction = null }) => {
   const getStatusColor = (status) => {
@@ -71,7 +72,13 @@ const TransactionModal = ({ isOpen, onClose, transaction = null }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>Détails de la transaction</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>

@@ -201,9 +201,15 @@ const PaymentModal = ({ isOpen, onClose, payment = null }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>Détails du paiement</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>

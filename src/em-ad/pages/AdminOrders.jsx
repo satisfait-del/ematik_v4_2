@@ -64,7 +64,13 @@ const OrderStatusModal = ({ isOpen, onClose, order = null, onUpdateStatus }) => 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>Détails de la commande</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>

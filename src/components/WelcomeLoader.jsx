@@ -9,6 +9,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import { keyframes as emotionKeyframes } from '@emotion/react';
+import { useColorModeValue } from '@chakra-ui/react';
 
 // Animation de pulsation pour le logo
 const pulse = emotionKeyframes`
@@ -23,7 +24,7 @@ const fadeIn = emotionKeyframes`
   100% { opacity: 1; transform: translateY(0); }
 `;
 
-const WelcomeLoader = ({ isOpen, message }) => {
+const WelcomeLoader = ({ isOpen, message, onClose }) => {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
@@ -49,8 +50,8 @@ const WelcomeLoader = ({ isOpen, message }) => {
 
   return (
     <Modal 
-      isOpen={true}
-      onClose={() => {}}
+      isOpen={isOpen}
+      onClose={onClose}
       isCentered
       closeOnOverlayClick={false}
       closeOnEsc={false}
@@ -61,7 +62,11 @@ const WelcomeLoader = ({ isOpen, message }) => {
         backdropFilter="blur(8px)"
       />
       <ModalContent
-        bg="transparent"
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
         boxShadow="none"
         display="flex"
         alignItems="center"
@@ -77,15 +82,25 @@ const WelcomeLoader = ({ isOpen, message }) => {
       >
         <VStack spacing={8} p={4}>
           <Image
-            src="/embleme.PNG"
+            src="/assets/lo.png"
             alt="Logo"
-            w="180px"
-            h="180px"
+            w="70px"
+            h="70px"
             animation={`${pulse} 2s ease-in-out infinite`}
-            filter="drop-shadow(0 0 10px rgba(255,255,255,0.3))"
+            filter="drop-shadow(0 0 10px rgba(0,128,255,0.3))"
             draggable={false}
             userSelect="none"
           />
+          <Text
+            fontSize="3xl"
+            fontFamily="aglowCandy"
+            bgGradient="linear(to-r, blue.400, teal.400)"
+            bgClip="text"
+            animation={`${fadeIn} 1s ease-out`}
+            textShadow="0 2px 10px rgba(0,0,0,0.3)"
+          >
+            eMatik
+          </Text>
           <VStack spacing={4}>
             <Text
               color="white"

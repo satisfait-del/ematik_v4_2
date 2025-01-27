@@ -35,6 +35,7 @@ import {
   Th,
   Td,
   Heading,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FiPlus, FiEdit2, FiTrash2, FiImage, FiUpload, FiX, FiLink } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
@@ -171,9 +172,15 @@ const TipModal = ({ isOpen, onClose, tip = null, onSubmit }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <form onSubmit={handleSubmit}>
           <ModalHeader>{tip ? 'Modifier l\'astuce' : 'Ajouter une astuce'}</ModalHeader>
           <ModalCloseButton />

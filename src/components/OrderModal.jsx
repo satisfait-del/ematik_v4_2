@@ -20,6 +20,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   FormHelperText,
+  useColorModeValue
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useOrders } from '../context/OrderContext'
@@ -184,7 +185,13 @@ const OrderModal = ({ isOpen, onClose, service }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>Commander {service.name}</ModalHeader>
         <ModalCloseButton />
         <form onSubmit={handleSubmit}>

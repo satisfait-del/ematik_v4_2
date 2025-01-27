@@ -60,17 +60,27 @@ const TransitionLoader = ({ message, targetPath }) => {
           animation={`${pulse} 2s infinite`}
         >
           <Image
-            src="/assets/embleme.PNG"
+            src="/assets/lo.png"
             alt="Logo"
-            w="180px"
-            h="180px"
-            filter="drop-shadow(0 0 10px rgba(255,255,255,0.3))"
+            w="70px"
+            h="70px"
+            filter="drop-shadow(0 0 10px rgba(0,128,255,0.3))"
             draggable={false}
             userSelect="none"
-            fallback={<Box w="180px" h="180px" bg="gray.700" borderRadius="md" />}
+            fallback={<Box w="70px" h="70px" bg="gray.700" borderRadius="md" />}
           />
         </Box>
-
+        <Text
+          fontSize="3xl"
+          fontFamily="aglowCandy"
+          bgGradient="linear(to-r, blue.400, teal.400)"
+          bgClip="text"
+          animation={`${fadeIn} 1s ease-out`}
+          textShadow="0 2px 10px rgba(0,0,0,0.3)"
+          mb={4}
+        >
+          eMatik
+        </Text>
         <VStack spacing={4}>
           <Spinner
             thickness="4px"

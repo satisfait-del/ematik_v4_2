@@ -181,10 +181,12 @@ const Auth = () => {
                 </FormControl>
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  bgGradient="linear(to-r, blue.400, teal.400)"
+                  color="white"
                   size="lg"
                   fontSize="md"
                   isLoading={loading}
+                  _hover={{ bgGradient: "linear(to-r, teal.400, blue.400)" }}
                 >
                   {isLogin ? 'Se connecter' : "S'inscrire"}
                 </Button>

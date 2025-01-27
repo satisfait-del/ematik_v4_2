@@ -390,10 +390,15 @@ const AddFunds = () => {
       <Modal 
         isOpen={isConfirmModalOpen} 
         onClose={() => setIsConfirmModalOpen(false)}
-        size="lg"
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent
+          bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+          backdropFilter="blur(8px)"
+          style={{
+            WebkitBackdropFilter: "blur(8px)"
+          }}
+        >
           <ModalHeader>Confirmation de la transaction</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>

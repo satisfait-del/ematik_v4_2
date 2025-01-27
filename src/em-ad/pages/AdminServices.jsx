@@ -36,6 +36,7 @@ import {
   InputLeftElement,
   Image,
   AspectRatio,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiUpload, FiImage } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
@@ -261,9 +262,15 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>
           {mode === 'add' ? 'Ajouter un service' : 'Modifier le service'}
         </ModalHeader>

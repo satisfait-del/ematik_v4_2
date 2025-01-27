@@ -86,7 +86,13 @@ const TipCard = ({ tip }) => {
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent
+          bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+          backdropFilter="blur(8px)"
+          style={{
+            WebkitBackdropFilter: "blur(8px)"
+          }}
+        >
           <ModalHeader>
             <Stack spacing={2}>
               <Heading size="lg">{tip.title}</Heading>

@@ -36,6 +36,7 @@ import {
   AccordionPanel,
   AccordionIcon,
   Badge,
+  useColorModeValue
 } from '@chakra-ui/react';
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiChevronRight } from 'react-icons/fi';
 import { supabase } from '../../lib/supabase';
@@ -143,7 +144,13 @@ const CategoryModal = ({ isOpen, onClose, category = null, mode = 'add', onSucce
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        backdropFilter="blur(8px)"
+        style={{
+          WebkitBackdropFilter: "blur(8px)"
+        }}
+      >
         <ModalHeader>
           {mode === 'add' ? 'Ajouter une catégorie' : 'Modifier la catégorie'}
         </ModalHeader>
