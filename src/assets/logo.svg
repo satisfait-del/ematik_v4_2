@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6B46C1"/>
+      <stop offset="50%" style="stop-color:#D53F8C"/>
+      <stop offset="100%" style="stop-color:#6B46C1"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(50, 100)">
+    <path d="M100,0 C150,-50 200,-50 250,0 C300,50 350,50 400,0" fill="none" stroke="url(#gradient)" stroke-width="40"/>
+    <text x="420" y="80" font-family="Arial" font-size="200" fill="#6B46C1">Matik</text>
+    <text x="150" y="150" font-family="Arial" font-size="24" fill="#6B46C1">By JSK Group</text>
+  </g>
+</svg>
