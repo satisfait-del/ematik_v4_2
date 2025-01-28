@@ -24,6 +24,7 @@ import {
   Icon,
   Spinner,
   Center,
+  Flex
 } from '@chakra-ui/react'
 import { useState, useRef } from 'react'
 import { FaCamera, FaKey, FaEye, FaEyeSlash, FaUserCircle, FaPhone, FaCalendarAlt, FaWallet } from 'react-icons/fa'
@@ -174,22 +175,32 @@ const Profile = () => {
         <Card bg={bgColor}>
           <CardBody>
             <VStack spacing={6} align="stretch">
-              <HStack justify="space-between">
+              <Flex 
+                justify="space-between" 
+                direction={{ base: "column", sm: "row" }}
+                gap={4}
+              >
                 <Heading size="lg">Mon Profil</Heading>
                 {!isEditing && (
                   <Button
                     colorScheme="blue"
                     onClick={() => setIsEditing(true)}
+                    width={{ base: "100%", sm: "auto" }}
                   >
                     Modifier
                   </Button>
                 )}
-              </HStack>
+              </Flex>
 
-              <HStack spacing={6} align="start">
+              <Stack 
+                direction={{ base: "column", md: "row" }}
+                spacing={6} 
+                align={{ base: "center", md: "start" }}
+                w="100%"
+              >
                 <VStack>
                   <Avatar
-                    size="2xl"
+                    size={{ base: "xl", md: "2xl" }}
                     name={profile?.full_name}
                     src={profile?.image}
                   />
@@ -213,47 +224,49 @@ const Profile = () => {
                   )}
                 </VStack>
 
-                <VStack align="stretch" flex={1} spacing={4}>
+                <VStack align="stretch" flex={1} spacing={4} w="100%">
                   {!isEditing ? (
                     <>
-                      <HStack>
-                        <Icon as={FaUserCircle} color="blue.500" />
-                        <Text fontWeight="bold">Nom complet:</Text>
-                        <Text>{profile?.full_name}</Text>
-                      </HStack>
+                      <Stack spacing={4} direction={{ base: "column", sm: "column" }} w="100%">
+                        <HStack>
+                          <Icon as={FaUserCircle} color="blue.500" />
+                          <Text fontWeight="bold" minW="120px">Nom complet:</Text>
+                          <Text>{profile?.full_name}</Text>
+                        </HStack>
 
-                      <HStack>
-                        <Icon as={FaPhone} color="green.500" />
-                        <Text fontWeight="bold">Téléphone:</Text>
-                        <Text>{profile?.phone_number || 'Non renseigné'}</Text>
-                      </HStack>
+                        <HStack>
+                          <Icon as={FaPhone} color="green.500" />
+                          <Text fontWeight="bold" minW="120px">Téléphone:</Text>
+                          <Text>{profile?.phone_number || 'Non renseigné'}</Text>
+                        </HStack>
 
-                      <HStack>
-                        <Icon as={FaWallet} color="purple.500" />
-                        <Text fontWeight="bold">Solde:</Text>
-                        <Text>{profile?.balance?.toLocaleString('fr-FR')} XFA</Text>
-                      </HStack>
+                        <HStack>
+                          <Icon as={FaWallet} color="purple.500" />
+                          <Text fontWeight="bold" minW="120px">Solde:</Text>
+                          <Text>{profile?.balance?.toLocaleString('fr-FR')} XFA</Text>
+                        </HStack>
 
-                      <HStack>
-                        <Icon as={FaCalendarAlt} color="orange.500" />
-                        <Text fontWeight="bold">Membre depuis:</Text>
-                        <Text>
-                          {profile?.created_at
-                            ? format(new Date(profile.created_at), "d MMMM yyyy", { locale: fr })
-                            : 'Non disponible'}
-                        </Text>
-                      </HStack>
+                        <HStack>
+                          <Icon as={FaCalendarAlt} color="orange.500" />
+                          <Text fontWeight="bold" minW="120px">Membre depuis:</Text>
+                          <Text>
+                            {profile?.created_at
+                              ? format(new Date(profile.created_at), "d MMMM yyyy", { locale: fr })
+                              : 'Non disponible'}
+                          </Text>
+                        </HStack>
 
-                      <HStack>
-                        <Text fontWeight="bold">Rôle:</Text>
-                        <Badge colorScheme={profile?.role === 'admin' ? 'red' : 'blue'}>
-                          {profile?.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
-                        </Badge>
-                      </HStack>
+                        <HStack>
+                          <Text fontWeight="bold" minW="120px">Rôle:</Text>
+                          <Badge colorScheme={profile?.role === 'admin' ? 'red' : 'blue'}>
+                            {profile?.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
+                          </Badge>
+                        </HStack>
+                      </Stack>
                     </>
                   ) : (
-                    <form onSubmit={handleSubmit}>
-                      <VStack spacing={4}>
+                    <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                      <VStack spacing={4} align="stretch">
                         <FormControl>
                           <FormLabel>Nom complet</FormLabel>
                           <Input
@@ -272,11 +285,16 @@ const Profile = () => {
                           />
                         </FormControl>
 
-                        <HStack spacing={4} width="100%">
+                        <Stack 
+                          direction={{ base: "column", sm: "row" }}
+                          spacing={4} 
+                          width="100%"
+                        >
                           <Button
                             colorScheme="blue"
                             type="submit"
                             isLoading={isLoading}
+                            width={{ base: "100%", sm: "auto" }}
                           >
                             Enregistrer
                           </Button>
@@ -289,15 +307,16 @@ const Profile = () => {
                                 phone_number: profile?.phone_number || '',
                               })
                             }}
+                            width={{ base: "100%", sm: "auto" }}
                           >
                             Annuler
                           </Button>
-                        </HStack>
+                        </Stack>
                       </VStack>
                     </form>
                   )}
                 </VStack>
-              </HStack>
+              </Stack>
             </VStack>
           </CardBody>
         </Card>
@@ -306,20 +325,27 @@ const Profile = () => {
         <Card bg={bgColor}>
           <CardBody>
             <VStack align="stretch" spacing={4}>
-              <Heading size="md">Sécurité</Heading>
-              <Button
-                leftIcon={<FaKey />}
-                onClick={() => setIsChangingPassword(!isChangingPassword)}
-                variant="outline"
+              <Flex 
+                justify="space-between" 
+                direction={{ base: "column", sm: "row" }}
+                gap={4}
               >
-                Changer le mot de passe
-              </Button>
+                <Heading size="md">Sécurité</Heading>
+                <Button
+                  leftIcon={<FaKey />}
+                  onClick={() => setIsChangingPassword(!isChangingPassword)}
+                  variant="outline"
+                  width={{ base: "100%", sm: "auto" }}
+                >
+                  Changer le mot de passe
+                </Button>
+              </Flex>
 
               {isChangingPassword && (
                 <VStack spacing={4} align="stretch">
                   <FormControl>
                     <FormLabel>Mot de passe actuel</FormLabel>
-                    <InputGroup>
+                    <InputGroup size={{ base: "md", sm: "md" }}>
                       <Input
                         type={showPassword ? 'text' : 'password'}
                         value={passwords.currentPassword}
@@ -327,6 +353,7 @@ const Profile = () => {
                       />
                       <InputRightElement>
                         <IconButton
+                          size="sm"
                           icon={showPassword ? <FaEyeSlash /> : <FaEye />}
                           variant="ghost"
                           onClick={() => setShowPassword(!showPassword)}
@@ -338,7 +365,7 @@ const Profile = () => {
 
                   <FormControl>
                     <FormLabel>Nouveau mot de passe</FormLabel>
-                    <InputGroup>
+                    <InputGroup size={{ base: "md", sm: "md" }}>
                       <Input
                         type={showPassword ? 'text' : 'password'}
                         value={passwords.newPassword}
@@ -346,6 +373,7 @@ const Profile = () => {
                       />
                       <InputRightElement>
                         <IconButton
+                          size="sm"
                           icon={showPassword ? <FaEyeSlash /> : <FaEye />}
                           variant="ghost"
                           onClick={() => setShowPassword(!showPassword)}
@@ -357,7 +385,7 @@ const Profile = () => {
 
                   <FormControl>
                     <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
-                    <InputGroup>
+                    <InputGroup size={{ base: "md", sm: "md" }}>
                       <Input
                         type={showPassword ? 'text' : 'password'}
                         value={passwords.confirmPassword}
@@ -365,6 +393,7 @@ const Profile = () => {
                       />
                       <InputRightElement>
                         <IconButton
+                          size="sm"
                           icon={showPassword ? <FaEyeSlash /> : <FaEye />}
                           variant="ghost"
                           onClick={() => setShowPassword(!showPassword)}
@@ -374,11 +403,15 @@ const Profile = () => {
                     </InputGroup>
                   </FormControl>
 
-                  <HStack spacing={4}>
+                  <Stack 
+                    direction={{ base: "column", sm: "row" }}
+                    spacing={4}
+                  >
                     <Button
                       colorScheme="blue"
                       onClick={handlePasswordChange}
                       isLoading={isLoading}
+                      width={{ base: "100%", sm: "auto" }}
                     >
                       Mettre à jour le mot de passe
                     </Button>
@@ -392,10 +425,11 @@ const Profile = () => {
                           confirmPassword: '',
                         })
                       }}
+                      width={{ base: "100%", sm: "auto" }}
                     >
                       Annuler
                     </Button>
-                  </HStack>
+                  </Stack>
                 </VStack>
               )}
             </VStack>

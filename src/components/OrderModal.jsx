@@ -137,8 +137,8 @@ const OrderModal = ({ isOpen, onClose, service }) => {
   }
 
   // Fonction pour obtenir le type d'input HTML approprié
-  const getInputType = () => {
-    switch (service.input_type) {
+  const getInputType = (inputType) => {
+    switch (inputType) {
       case 'email':
         return 'email'
       case 'telephone':
@@ -151,8 +151,8 @@ const OrderModal = ({ isOpen, onClose, service }) => {
   }
 
   // Fonction pour obtenir le placeholder approprié
-  const getPlaceholder = () => {
-    switch (service.input_type) {
+  const getInputPlaceholder = (inputType) => {
+    switch (inputType) {
       case 'email':
         return 'exemple@email.com'
       case 'telephone':
@@ -167,8 +167,8 @@ const OrderModal = ({ isOpen, onClose, service }) => {
   }
 
   // Fonction pour obtenir le label approprié
-  const getLabel = () => {
-    switch (service.input_type) {
+  const getInputLabel = (inputType) => {
+    switch (inputType) {
       case 'email':
         return 'Adresse email'
       case 'telephone':
@@ -215,18 +215,31 @@ const OrderModal = ({ isOpen, onClose, service }) => {
 
               {service.input_type && (
                 <FormControl isRequired>
-                  <FormLabel>{getLabel()}</FormLabel>
+                  <FormLabel>{getInputLabel(service.input_type)}</FormLabel>
                   <Input
-                    type={getInputType()}
+                    type={getInputType(service.input_type)}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder={getPlaceholder()}
+                    placeholder={getInputPlaceholder(service.input_type)}
                   />
-                  {service.instructions && (
-                    <FormHelperText>
-                      {service.instructions}
-                    </FormHelperText>
-                  )}
+                  <VStack 
+                    mt={2} 
+                    p={4} 
+                    bg={useColorModeValue('gray.50', 'gray.700')} 
+                    borderRadius="md" 
+                    spacing={3}
+                    align="start"
+                  >
+                    <Text fontSize="sm" fontWeight="medium" color={useColorModeValue('gray.600', 'gray.200')}>
+                      Instructions :
+                    </Text>
+                    <Text fontSize="sm" color={useColorModeValue('gray.600', 'gray.300')} lineHeight="tall">
+                      {service.description}
+                    </Text>
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')} fontStyle="italic">
+                      Veuillez vérifier votre mail 30 à 60 min après paiement pour recevoir {service.name}.
+                    </Text>
+                  </VStack>
                 </FormControl>
               )}
 

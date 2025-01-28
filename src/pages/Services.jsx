@@ -27,6 +27,11 @@ import {
   Flex,
   ButtonGroup,
   Spinner,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  StatArrow,
 } from '@chakra-ui/react'
 import { FaHeart, FaSearch, FaClock, FaShoppingCart, FaHashtag, FaTh, FaList, FaTrophy, FaShoppingBag, FaWallet, FaChartLine, FaTimes } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
@@ -107,17 +112,6 @@ const Services = () => {
 
         if (categoriesError) throw categoriesError;
 
-        // Charger le profil utilisateur pour les statistiques
-        if (user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('total_spent')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          setTotalSpent(profile?.total_spent || 0);
-        }
-
         // Organiser les catégories
         const categoriesMap = {};
         categoriesData.forEach(category => {
@@ -144,30 +138,33 @@ const Services = () => {
     };
 
     loadServices();
-  }, [user, toast]);
+  }, [toast]);
 
-  // Charger le nombre de commandes
+  // Charger le nombre de commandes et les dépenses
   useEffect(() => {
     const loadUserStats = async () => {
-      if (!user) return
+      if (!user) return;
 
       try {
-        // Charger le nombre de commandes
-        const { count, error: orderError } = await supabase
+        // Charger toutes les commandes pour calculer le total dépensé
+        const { data: orders, error: ordersError } = await supabase
           .from('orders')
-          .select('*', { count: 'exact' })
-          .eq('user_id', user.id)
+          .select('total_amount')
+          .eq('user_id', user.id);
 
-        if (orderError) throw orderError
+        if (ordersError) throw ordersError;
 
-        setOrderCount(count || 0)
+        // Calculer le total dépensé
+        const total = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+        setTotalSpent(total);
+        setOrderCount(orders.length);
       } catch (error) {
-        console.error('Erreur chargement statistiques:', error)
+        console.error('Erreur chargement statistiques:', error);
       }
-    }
+    };
 
-    loadUserStats()
-  }, [user])
+    loadUserStats();
+  }, [user]);
 
   const getGreeting = () => {
     const hour = new Date().getHours()

@@ -23,7 +23,7 @@ import {
   VStack,
   Text,
 } from '@chakra-ui/react';
-import { FaMoon, FaSun, FaShoppingCart, FaLightbulb, FaShoppingBag, FaWallet, FaHeart, FaBars } from 'react-icons/fa';
+import { FaMoon, FaSun, FaShoppingCart, FaLightbulb, FaShoppingBag, FaWallet, FaHeart, FaBars, FaUser } from 'react-icons/fa';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import UserMenu from './UserMenu';
@@ -33,6 +33,8 @@ const Layout = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const { user } = useAuth();
   const location = useLocation();
+  const [showMobileNav, setShowMobileNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [profile, setProfile] = useState(null);
   const { getProfile } = useProfile();
@@ -47,16 +49,37 @@ const Layout = ({ children }) => {
     }
   }, [user, getProfile]);
 
+  useEffect(() => {
+    const controlMobileNav = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY) { // scrolling down
+        setShowMobileNav(false);
+      } else { // scrolling up
+        setShowMobileNav(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', controlMobileNav);
+
+    return () => {
+      window.removeEventListener('scroll', controlMobileNav);
+    };
+  }, [lastScrollY]);
+
   return (
     <Box minH="100vh" bg={useColorModeValue('gray.50', 'gray.900')}>
+      {/* Navbar principale fixe */}
       <Box
-        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
-        borderBottom="1px"
-        borderColor={useColorModeValue('gray.200', 'gray.700')}
         position="fixed"
         w="100%"
         top={0}
         zIndex={999}
+        bg={useColorModeValue('rgba(255, 255, 255, 0.8)', 'rgba(26, 32, 44, 0.8)')}
+        borderBottom="1px"
+        borderColor={useColorModeValue('gray.200', 'gray.700')}
         backdropFilter="blur(8px)"
         style={{
           WebkitBackdropFilter: "blur(8px)",
@@ -87,79 +110,69 @@ const Layout = ({ children }) => {
               </HStack>
             </RouterLink>
 
-            {/* Desktop Navigation */}
-            <HStack spacing={{ base: 2, md: 4 }} mx={{ base: 2, md: 4 }} flex={1} display={{ base: "none", md: "flex" }}>
-              <Link
-                as={RouterLink}
-                to="/services"
-                color={location.pathname === '/services' ? 'blue.500' : undefined}
-                fontWeight={location.pathname === '/services' ? 'bold' : 'normal'}
-                _hover={{ color: 'blue.500' }}
-                display="flex"
-                alignItems="center"
-                fontSize={{ base: 'sm', lg: 'md' }}
-              >
-                <Icon as={FaShoppingCart} mr={1} />
-                Services
-              </Link>
-              {user && (
+            <Flex flex={1} justify="flex-end">
+              {/* Desktop Navigation */}
+              <HStack spacing={4} display={{ base: "none", md: "flex" }} mr={4}>
                 <Link
                   as={RouterLink}
-                  to="/orders"
-                  color={location.pathname === '/orders' ? 'blue.500' : undefined}
-                  fontWeight={location.pathname === '/orders' ? 'bold' : 'normal'}
+                  to="/services"
+                  color={location.pathname === '/services' ? 'blue.500' : undefined}
+                  fontWeight={location.pathname === '/services' ? 'bold' : 'normal'}
                   _hover={{ color: 'blue.500' }}
                   display="flex"
                   alignItems="center"
                   fontSize={{ base: 'sm', lg: 'md' }}
                 >
-                  <Icon as={FaShoppingBag} mr={1} />
-                  Mes commandes
+                  <Icon as={FaShoppingCart} mr={1} />
+                  Services
                 </Link>
-              )}
-              <Link
-                as={RouterLink}
-                to="/tips"
-                color={location.pathname === '/tips' ? 'blue.500' : undefined}
-                fontWeight={location.pathname === '/tips' ? 'bold' : 'normal'}
-                _hover={{ color: 'blue.500' }}
-                display="flex"
-                alignItems="center"
-                fontSize={{ base: 'sm', lg: 'md' }}
-              >
-                <Icon as={FaLightbulb} mr={1} />
-                Astuces
-              </Link>
-              {user && (
                 <Link
                   as={RouterLink}
-                  to="/add-funds"
-                  color={location.pathname === '/add-funds' ? 'blue.500' : undefined}
-                  fontWeight={location.pathname === '/add-funds' ? 'bold' : 'normal'}
+                  to="/tips"
+                  color={location.pathname === '/tips' ? 'blue.500' : undefined}
+                  fontWeight={location.pathname === '/tips' ? 'bold' : 'normal'}
                   _hover={{ color: 'blue.500' }}
                   display="flex"
                   alignItems="center"
                   fontSize={{ base: 'sm', lg: 'md' }}
                 >
-                  <Icon as={FaWallet} mr={1} />
-                  Ajouter des fonds
+                  <Icon as={FaLightbulb} mr={1} />
+                  Astuces
                 </Link>
-              )}
-            </HStack>
+                {user && (
+                  <>
+                    <Link
+                      as={RouterLink}
+                      to="/orders"
+                      color={location.pathname === '/orders' ? 'blue.500' : undefined}
+                      fontWeight={location.pathname === '/orders' ? 'bold' : 'normal'}
+                      _hover={{ color: 'blue.500' }}
+                      display="flex"
+                      alignItems="center"
+                      fontSize={{ base: 'sm', lg: 'md' }}
+                    >
+                      <Icon as={FaShoppingBag} mr={1} />
+                      Commandes
+                    </Link>
+                    <Link
+                      as={RouterLink}
+                      to="/add-funds"
+                      color={location.pathname === '/add-funds' ? 'blue.500' : undefined}
+                      fontWeight={location.pathname === '/add-funds' ? 'bold' : 'normal'}
+                      _hover={{ color: 'blue.500' }}
+                      display="flex"
+                      alignItems="center"
+                      fontSize={{ base: 'sm', lg: 'md' }}
+                    >
+                      <Icon as={FaWallet} mr={1} />
+                      Ajouter des fonds
+                    </Link>
+                  </>
+                )}
+              </HStack>
 
-            {/* Right Side Icons */}
-            <HStack spacing={4}>
-              {/* Mobile Menu Button */}
-              <IconButton
-                display={{ base: 'flex', md: 'none' }}
-                icon={<FaBars />}
-                variant="ghost"
-                onClick={onOpen}
-                aria-label="Open Menu"
-              />
-
-              {/* Desktop Icons */}
-              <Box display={{ base: 'none', md: 'block' }}>
+              {/* Right Side Items */}
+              <HStack spacing={2}>
                 {user && (
                   <IconButton
                     as={RouterLink}
@@ -171,128 +184,107 @@ const Layout = ({ children }) => {
                     _hover={{ color: 'red.500' }}
                   />
                 )}
-              </Box>
-              
-              <IconButton
-                icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
-                onClick={toggleColorMode}
-                variant="ghost"
-                aria-label="Toggle Theme"
-                color={colorMode === 'light' ? 'gray.600' : 'yellow.400'}
-                _hover={{ color: colorMode === 'light' ? 'gray.800' : 'yellow.500' }}
-              />
-              
-              {user ? (
-                <UserMenu />
-              ) : (
-                <Button
-                  as={RouterLink}
-                  to="/auth"
-                  bgGradient="linear(to-r, blue.400, teal.400)"
-                  color="white"
-                  size="sm"
-                  _hover={{ bgGradient: "linear(to-r, teal.400, blue.400)" }}
-                >
-                  Se connecter
-                </Button>
-              )}
-            </HStack>
+                <IconButton
+                  icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
+                  onClick={toggleColorMode}
+                  variant="ghost"
+                  aria-label="Toggle color mode"
+                  color={colorMode === 'light' ? 'gray.600' : 'yellow.400'}
+                  _hover={{ color: colorMode === 'light' ? 'gray.800' : 'yellow.500' }}
+                />
+                
+                {user ? (
+                  <UserMenu />
+                ) : (
+                  <Button
+                    as={RouterLink}
+                    to="/auth"
+                    bgGradient="linear(to-r, blue.400, teal.400)"
+                    color="white"
+                    size="sm"
+                    _hover={{ bgGradient: "linear(to-r, teal.400, blue.400)" }}
+                  >
+                    Se connecter
+                  </Button>
+                )}
+              </HStack>
+            </Flex>
           </Flex>
         </Container>
       </Box>
 
-      {/* Mobile Navigation Drawer */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            <RouterLink to="/" onClick={onClose}>
-              <HStack spacing={2}>
-                <Image
-                  src="/assets/lo.png"
-                  alt="Ematik Logo"
-                  height="30px"
-                  width="auto"
-                  maxW="30px"
-                  objectFit="contain"
-                />
-                <Text
-                  fontSize="xl"
-                  fontFamily="aglowCandy"
-                  bgGradient="linear(to-r, blue.400, teal.400)"
-                  bgClip="text"
-                >
-                  eMatik
-                </Text>
-              </HStack>
-            </RouterLink>
-          </DrawerHeader>
-          <DrawerBody>
-            <VStack align="stretch" spacing={4}>
+      {/* Ajustement de la marge pour le contenu principal */}
+      <Box pt={{ base: "60px", md: "70px" }}>
+        {/* Sous-navbar mobile */}
+        <Box
+          display={{ base: "block", md: "none" }}
+          py={2}
+          transform={`translateY(${showMobileNav ? '0' : '-100%'})`}
+          transition="transform 0.3s ease-in-out"
+          bg={useColorModeValue('white', 'gray.800')}
+          borderBottom="1px"
+          borderColor={useColorModeValue('gray.200', 'gray.700')}
+          position="sticky"
+          top="60px"
+          zIndex={998}
+        >
+          <Container maxW="container.xl">
+            <HStack justify="space-around">
               <Link
                 as={RouterLink}
                 to="/services"
-                onClick={onClose}
                 display="flex"
                 alignItems="center"
+                color={location.pathname === '/services' ? 'blue.500' : undefined}
+                fontSize="sm"
               >
-                <Icon as={FaShoppingCart} mr={2} />
+                <Icon as={FaShoppingCart} boxSize={4} mr={2} />
                 Services
               </Link>
-              {user && (
-                <Link
-                  as={RouterLink}
-                  to="/orders"
-                  onClick={onClose}
-                  display="flex"
-                  alignItems="center"
-                >
-                  <Icon as={FaShoppingBag} mr={2} />
-                  Mes commandes
-                </Link>
-              )}
+              
               <Link
                 as={RouterLink}
                 to="/tips"
-                onClick={onClose}
                 display="flex"
                 alignItems="center"
+                color={location.pathname === '/tips' ? 'blue.500' : undefined}
+                fontSize="sm"
               >
-                <Icon as={FaLightbulb} mr={2} />
+                <Icon as={FaLightbulb} boxSize={4} mr={2} />
                 Astuces
               </Link>
-              {user && (
-                <Link
-                  as={RouterLink}
-                  to="/add-funds"
-                  onClick={onClose}
-                  display="flex"
-                  alignItems="center"
-                >
-                  <Icon as={FaWallet} mr={2} />
-                  Ajouter des fonds
-                </Link>
-              )}
-              {user && (
-                <Link
-                  as={RouterLink}
-                  to="/favorites"
-                  onClick={onClose}
-                  display="flex"
-                  alignItems="center"
-                >
-                  <Icon as={FaHeart} mr={2} />
-                  Favoris
-                </Link>
-              )}
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
 
-      {/* Main Content */}
-      <Box pt={{ base: "60px", md: "80px" }}>
+              {user && (
+                <>
+                  <Link
+                    as={RouterLink}
+                    to="/orders"
+                    display="flex"
+                    alignItems="center"
+                    color={location.pathname === '/orders' ? 'blue.500' : undefined}
+                    fontSize="sm"
+                  >
+                    <Icon as={FaShoppingBag} boxSize={4} mr={2} />
+                    Commandes
+                  </Link>
+
+                  <Link
+                    as={RouterLink}
+                    to="/add-funds"
+                    display="flex"
+                    alignItems="center"
+                    color={location.pathname === '/add-funds' ? 'blue.500' : undefined}
+                    fontSize="sm"
+                  >
+                    <Icon as={FaWallet} boxSize={4} mr={2} />
+                    Fonds
+                  </Link>
+                </>
+              )}
+            </HStack>
+          </Container>
+        </Box>
+
         {children}
       </Box>
     </Box>
