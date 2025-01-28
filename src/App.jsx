@@ -35,6 +35,7 @@ import { ProfileProvider } from './contexts/ProfileContext';
 import AdminTips from './em-ad/pages/AdminTips';
 import TransitionPage from './pages/TransitionPage';
 import { OrderNotificationProvider } from './em-ad/context/OrderNotificationContext';
+import Onboarding from './pages/Onboarding';
 
 const theme = extendTheme({
   colors: {
@@ -75,6 +76,7 @@ function App() {
                             } />
                             <Route path="/transition" element={<TransitionPage />} />
                             <Route path="/" element={<Layout><Home /></Layout>} />
+                            <Route path="/onboarding" element={<Layout><Onboarding /></Layout>} />
                             <Route path="/services" element={<Layout><Services /></Layout>} />
                             <Route path="/tips" element={<Layout><Tips /></Layout>} />
                             

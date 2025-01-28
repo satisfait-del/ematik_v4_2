@@ -24,11 +24,13 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { supabase } from '../../lib/supabase';
 import WelcomeLoader from '../../components/WelcomeLoader';
 import TransitionLoader from '../../components/TransitionLoader';
+import { handleError } from '../../utils/errorHandler';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -43,65 +45,106 @@ const Auth = () => {
   const bgColor = useColorModeValue('white', 'gray.800');
   const textColor = useColorModeValue('gray.600', 'gray.200');
 
-  const handleSubmit = async (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    
     try {
-      if (isLogin) {
-        // Tentative de connexion
-        const { error } = await signIn(email, password);
-        if (!error) {
-          // Rediriger vers la page de transition
-          navigate('/transition', { 
-            replace: true,
-            state: { 
-              message: "Bienvenue ! Chargement de vos services...",
-              redirectTo: "/services"
-            }
-          });
-        } else {
-          throw error;
-        }
-      } else {
-        // Inscription
-        const { data: { user }, error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      setLoading(true);
 
-        if (error) throw error;
-
-        if (user) {
-          setWelcomeMessage(`Bienvenue ${user.email} !`);
-          setShowWelcomeLoader(true);
-          
-          setTimeout(() => {
-            setShowWelcomeLoader(false);
-            setIsLogin(true);
-            setEmail('');
-            setPassword('');
-          }, 3000);
-
-          toast({
-            title: "Inscription réussie",
-            description: "Vérifiez votre email pour confirmer votre compte",
-            status: "success",
-            duration: 5000,
-            position: "top",
-            isClosable: true,
-          });
-        }
+      if (password !== confirmPassword) {
+        throw new Error('Les mots de passe ne correspondent pas');
       }
-    } catch (error) {
+
+      if (!name.trim()) {
+        throw new Error('Le nom est requis');
+      }
+
+      // 1. Créer l'utilisateur avec le nom dans les metadata
+      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name // Stocké dans la table auth.users
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
+      // 2. Attendre que l'utilisateur soit créé
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 3. Créer le profil utilisateur
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert([
+          {
+            id: user.id,
+            full_name: name,
+            has_completed_onboarding: false
+          }
+        ]);
+
+      // Ignorer l'erreur si le profil existe déjà
+      if (profileError && !profileError.message.includes('duplicate key')) {
+        throw profileError;
+      }
+
+      // 4. Créer l'entrée onboarding_data
+      const { error: onboardingError } = await supabase
+        .from('onboarding_data')
+        .insert([
+          {
+            user_id: user.id,
+            step_completed: 0
+          }
+        ]);
+
+      if (onboardingError) throw onboardingError;
+
       toast({
-        title: isLogin ? 'Erreur de connexion' : 'Erreur d\'inscription',
-        description: error.message,
-        status: 'error',
+        title: 'Inscription réussie',
+        description: 'Votre compte a été créé avec succès',
+        status: 'success',
         duration: 5000,
-        position: "top",
         isClosable: true,
       });
+
+      navigate('/onboarding');
+    } catch (error) {
+      handleError(error, toast);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    
+    try {
+      setLoading(true);
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('has_completed_onboarding')
+        .eq('id', user.id)
+        .single();
+
+      // Rediriger vers la page appropriée
+      if (!profile.has_completed_onboarding) {
+        navigate('/onboarding');
+      } else {
+        navigate('/services');
+      }
+    } catch (error) {
+      handleError(error, toast);
     } finally {
       setLoading(false);
     }
@@ -115,6 +158,7 @@ const Auth = () => {
     setIsLogin(!isLogin);
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setName('');
     setShowPassword(false);
   };
@@ -137,7 +181,7 @@ const Auth = () => {
             <Heading textAlign="center">
               {isLogin ? 'Connexion' : 'Inscription'}
             </Heading>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={isLogin ? handleSignIn : handleSignUp}>
               <Stack spacing={4}>
                 {!isLogin && (
                   <FormControl isRequired>
@@ -179,6 +223,28 @@ const Auth = () => {
                     </InputRightElement>
                   </InputGroup>
                 </FormControl>
+                {!isLogin && (
+                  <FormControl isRequired>
+                    <FormLabel>Confirmer le mot de passe</FormLabel>
+                    <InputGroup>
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        disabled={loading}
+                      />
+                      <InputRightElement>
+                        <IconButton
+                          aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                          icon={showPassword ? <FaEyeSlash /> : <FaEye />}
+                          variant="ghost"
+                          onClick={togglePasswordVisibility}
+                          size="sm"
+                        />
+                      </InputRightElement>
+                    </InputGroup>
+                  </FormControl>
+                )}
                 <Button
                   type="submit"
                   bgGradient="linear(to-r, blue.400, teal.400)"

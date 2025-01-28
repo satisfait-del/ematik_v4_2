@@ -72,6 +72,21 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
   const [subcategories, setSubcategories] = useState([]);
   const toast = useToast();
 
+  const resetForm = () => {
+    setName('');
+    setDescription('');
+    setPrice('');
+    setCategoryId('');
+    setImageUrl('');
+    setIsAvailable(true);
+    setInputPlaceholder('');
+    setSubcategoryId('');
+    setDurationType('days');
+    setDurationValue('30');
+    setDeliveryTimeType('hours');
+    setDeliveryTimeValue('24');
+  };
+
   useEffect(() => {
     if (service && mode === 'edit') {
       setName(service.name || '');
@@ -85,7 +100,7 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
       setInputPlaceholder(service.input_placeholder || '');
       setSubcategoryId(service.subcategory || '');
       setDurationType(service.duration_type || 'days');
-      setDurationValue(service.duration_value?.toString() || '30');
+      setDurationValue(service.duration_type === 'lifetime' ? null : (service.duration_value?.toString() || '30'));
       setDeliveryTimeType(service.delivery_time_type || 'hours');
       setDeliveryTimeValue(service.delivery_time_value?.toString() || '24');
     }
@@ -181,7 +196,7 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!name || !description || !price || !categoryId) {
+    if (!name || !price || !categoryId || !description) {
       toast({
         title: 'Erreur',
         description: 'Veuillez remplir tous les champs obligatoires',
@@ -249,7 +264,7 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
 
       onClose();
       if (onSubmit) onSubmit();
-      
+      resetForm();
     } catch (error) {
       console.error('Error saving service:', error);
       toast({
@@ -278,25 +293,25 @@ const ServiceModal = ({ isOpen, onClose, service = null, mode = 'add', onSubmit 
         <ModalBody pb={6}>
           <VStack spacing={4}>
             <FormControl isRequired>
-              <FormLabel>Nom</FormLabel>
+              <FormLabel>Nom du service</FormLabel>
               <Input
-                placeholder="Nom du service"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder="Nom du service"
               />
             </FormControl>
 
-            <FormControl>
+            <FormControl isRequired mt={4}>
               <FormLabel>Description</FormLabel>
               <Textarea
-                placeholder="Description du service"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description du service"
               />
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel>Prix (€)</FormLabel>
+              <FormLabel>Prix (FCFA)</FormLabel>
               <Input
                 type="number"
                 step="0.01"
@@ -475,6 +490,22 @@ const AdminServices = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
+  const resetForm = () => {
+    setSelectedService(null);
+    setMode('add');
+  };
+
+  const openAddModal = () => {
+    resetForm();
+    onOpen();
+  };
+
+  const openEditModal = (service) => {
+    setSelectedService(service);
+    setMode('edit');
+    onOpen();
+  };
+
   // Fonction pour rafraîchir la liste des services
   const fetchServices = async () => {
     try {
@@ -541,15 +572,11 @@ const AdminServices = () => {
   }, []);
 
   const handleAddService = () => {
-    setSelectedService(null);
-    setMode('add');
-    onOpen();
+    openAddModal();
   };
 
   const handleEditService = (service) => {
-    setSelectedService(service);
-    setMode('edit');
-    onOpen();
+    openEditModal(service);
   };
 
   const handleDeleteService = async (serviceId) => {
@@ -615,7 +642,6 @@ const AdminServices = () => {
               <Tr>
                 <Th>Image</Th>
                 <Th>Nom</Th>
-                <Th>Description</Th>
                 <Th>Prix</Th>
                 <Th>Catégorie</Th>
                 <Th>Statut</Th>
@@ -648,8 +674,7 @@ const AdminServices = () => {
                       </Box>
                     </Td>
                     <Td>{service.name}</Td>
-                    <Td>{service.description}</Td>
-                    <Td>{service.price} €</Td>
+                    <Td>{service.price.toLocaleString('fr-FR')} FCFA</Td>
                     <Td>{service.category?.name}</Td>
                     <Td>
                       <Badge colorScheme={service.is_available ? 'green' : 'red'}>

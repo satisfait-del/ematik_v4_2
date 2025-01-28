@@ -42,11 +42,11 @@ export const ProfileProvider = ({ children }) => {
           .from('profiles')
           .insert([{
             id: user.id,
-            full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
-            email: user.email,
+            full_name: '',
             total_spent: 0,
             balance: 0,
-            role: 'user'
+            role: 'user',
+            has_completed_onboarding: false
           }])
           .select()
           .maybeSingle();

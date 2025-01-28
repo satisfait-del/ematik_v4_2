@@ -44,6 +44,7 @@ import { supabase } from '../lib/supabase'
 import ServiceCard from '../components/ServiceCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import { useAuth } from '../contexts/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const Services = () => {
   // Color mode values
@@ -71,6 +72,7 @@ const Services = () => {
   const { balance } = useBalance()
   const { addOrder } = useAdminOrder()
   const { user } = useAuth()
+  const navigate = useNavigate()
 
   const getUserLevel = (spent) => {
     if (spent >= 100000) return 'OR'
@@ -139,6 +141,30 @@ const Services = () => {
 
     loadServices();
   }, [toast]);
+
+  useEffect(() => {
+    const checkOnboarding = async () => {
+      if (!user) return;
+
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('has_completed_onboarding')
+          .eq('id', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (!profile.has_completed_onboarding) {
+          navigate('/onboarding');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+      }
+    };
+
+    checkOnboarding();
+  }, [user, navigate]);
 
   // Charger le nombre de commandes et les dépenses
   useEffect(() => {

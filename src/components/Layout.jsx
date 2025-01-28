@@ -28,6 +28,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import UserMenu from './UserMenu';
 import { useProfile } from '../hooks/useProfile';
+import Chatbot from './Chatbot';
 
 const Layout = ({ children }) => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -287,6 +288,7 @@ const Layout = ({ children }) => {
 
         {children}
       </Box>
+      <Chatbot />
     </Box>
   );
 };

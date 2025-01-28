@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Menu,
   MenuButton,
@@ -22,28 +22,34 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProfile } from '../contexts/ProfileContext';
 
 const UserMenu = () => {
+  // Hooks d'authentification et de navigation
   const { signOut } = useAuth();
   const { profile, loading } = useProfile();
   const navigate = useNavigate();
 
+  // Hooks de style Chakra UI
   const menuBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.600');
   const textColor = useColorModeValue('gray.700', 'gray.200');
   const iconColor = useColorModeValue('gray.500', 'gray.400');
   const headingColor = useColorModeValue('gray.800', 'white');
   const balanceColor = useColorModeValue('green.500', 'green.300');
+  const hoverBg = useColorModeValue('gray.100', 'gray.700');
 
-  const formatBalance = (balance) => {
-    return new Intl.NumberFormat('fr-FR').format(balance || 0);
-  };
+  // Fonctions mémorisées
+  const formatBalance = useMemo(() => {
+    return (balance) => new Intl.NumberFormat('fr-FR').format(balance || 0);
+  }, []);
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'Bonjour';
-    if (hour >= 12 && hour < 18) return 'Bon après-midi';
-    if (hour >= 18 && hour < 22) return 'Bonsoir';
-    return 'Bonne nuit';
-  };
+  const getGreeting = useMemo(() => {
+    return () => {
+      const hour = new Date().getHours();
+      if (hour >= 5 && hour < 12) return 'Bonjour';
+      if (hour >= 12 && hour < 18) return 'Bon après-midi';
+      if (hour >= 18 && hour < 22) return 'Bonsoir';
+      return 'Bonne nuit';
+    };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -70,7 +76,7 @@ const UserMenu = () => {
         rounded="full"
         py={2}
         px={4}
-        _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
+        _hover={{ bg: hoverBg }}
       >
         <HStack spacing={3}>
           <Avatar
@@ -98,13 +104,7 @@ const UserMenu = () => {
           </VStack>
         </HStack>
       </MenuButton>
-
-      <MenuList
-        bg={menuBg}
-        borderColor={borderColor}
-        boxShadow="lg"
-        p={2}
-      >
+      <MenuList bg={menuBg} borderColor={borderColor} boxShadow="lg" p={2}>
         <MenuItem
           icon={<Icon as={FaUser} color={iconColor} />}
           onClick={() => navigate('/profile')}
